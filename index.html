@@ -19,7 +19,7 @@
   --neon:rgba(160,80,255,0.5);
 }
 
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-top:env(safe-area-inset-top);}
 button{font-family:inherit;cursor:pointer;}
 input,select,textarea{font-family:inherit;font-size:15px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg3);color:var(--text);outline:none;box-sizing:border-box;}
 textarea{resize:none;min-height:70px;}
@@ -551,6 +551,7 @@ function openGarageForm(id){
         ${g?'Enregistrer':'Ajouter'}
       </button>
     </div>`);
+  window._garageId = id||'';
   window._garagePhoto=g?.photo||'';
 }
 function previewPhoto(input){
