@@ -184,6 +184,12 @@ function renderHome(){
     <div style="margin-bottom:24px">
       <div class="section-header"><span class="section-title">À venir</span></div>
       ${upcoming.length===0?'<div class="empty">Aucun RDV à venir</div>':upcoming.map(rdvRow).join('')}
+    </div>
+    <div style="padding:0 20px 30px;display:flex;gap:10px">
+      <button onclick="exportData()" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:13px;font-weight:700">&#11015; Exporter</button>
+      <label style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:13px;font-weight:700;text-align:center;cursor:pointer">
+        &#11014; Importer<input type="file" accept=".json" onchange="importData(this)" style="display:none"/>
+      </label>
     </div>`;
 }
 
@@ -572,7 +578,38 @@ function saveGarage(id){
 }
 function deleteGarage(id){DB.garages=DB.garages.filter(g=>g.id!==id);save();closeModal();toast('Supprimé');renderActive();}
 
-function renderActive(){
+function exportData(){
+  const json=JSON.stringify(DB,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='cleanyourcar-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Sauvegarde exportée ✓');
+}
+function importData(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.clients && data.rdvs && data.garages){
+        DB=data;
+        save();
+        renderActive();
+        toast('Données importées ✓');
+      } else {
+        alert('Fichier invalide');
+      }
+    } catch(err){
+      alert('Erreur lors de l import');
+    }
+  };
+  reader.readAsText(file);
+}
   const active=document.querySelector('.page.active');
   if(active) render(active.id.replace('page-',''));
 }
